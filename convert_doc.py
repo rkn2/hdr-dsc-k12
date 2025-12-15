@@ -176,8 +176,8 @@ def convert_to_notebook(docx_path, output_notebook_path):
         os.remove(temp_md)
 
 if __name__ == "__main__":
-    docx_file = "../curriculumNotesFromBob/Chapter 10 - Observational Studies and Designed Experiments (Guided Notes).docx"
-    output_nb = "Chapter_10.ipynb"
+    docx_file = "../curriculumNotesFromBob/Chapter 11 - Understanding Randomness (Guided Notes).docx"
+    output_nb = "Chapter_11.ipynb"
     
     # Ensure paths are correct relative to cwd
     cwd = os.getcwd()
