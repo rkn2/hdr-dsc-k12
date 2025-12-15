@@ -54,7 +54,7 @@ def convert_to_notebook(docx_path, output_notebook_path):
         "pandoc",
         docx_path,
         "-f", "docx",
-        "-t", "markdown",
+        "-t", "gfm",
         "--wrap=none",
         f"--extract-media={media_dir}",
         "-o", temp_md
