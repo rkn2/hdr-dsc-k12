@@ -71,26 +71,26 @@ def convert_to_notebook(docx_path, output_notebook_path):
     # Pandoc markdown images look like: ![](path/to/image.png) or ![alt](path/to/image.png)
     # Regex to find images: !\[(.*?)\]\((.*?)\)
     
-    def image_replacer(match):
-        alt_text = match.group(1)
+    # Replace markdown images: ![alt](path)
+    def md_image_replacer(match):
         img_path = match.group(2)
-        
-        # The path from pandoc will be relative to where we ran it, e.g. media_chapter_10/media/image1.png
-        # Note: Pandoc extract-media behavior creates a folder INSIDE the target dir usually called 'media'
-        # Let's check the actual path in the regex match vs file system
-        
-        # If pandoc outputs paths like 'media_chapter_10/media/image1.png', we use that.
-        
-        print(f"Found image: {img_path}")
+        print(f"Found markdown image: {img_path}")
         return get_base64_image_tag(img_path)
+    
+    processed_content = re.sub(r'!\[(.*?)\]\((.*?)\)', md_image_replacer, md_content)
 
-    # Replace markdown images with HTML
-    processed_content = re.sub(r'!\[(.*?)\]\((.*?)\)', image_replacer, md_content)
+    # Replace HTML images: <img src="path" ... />
+    def html_image_replacer(match):
+        img_path = match.group(1)
+        print(f"Found HTML image: {img_path}")
+        return get_base64_image_tag(img_path)
+    
+    processed_content = re.sub(r'<img src="(.*?)"(?:.*?)/>', html_image_replacer, processed_content)
 
     # 3b. Clean up Pandoc artifacts
-    # Remove dimension attributes like {width="..." height="..."} that might appear after images
+    # Remove dimension attributes like {width="..." height="..."} that might appear after markdown images
     processed_content = re.sub(r'\{width=.*?\}', '', processed_content)
-
+    
     # Remove spans like [Text]{.underline} -> <u>Text</u>
     # Or generically [Text]{...} -> Text (or handle specific classes)
     def span_replacer(match):
