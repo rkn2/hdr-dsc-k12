@@ -71,6 +71,8 @@ After the baseline conversion, `Chapter_10_updated.ipynb` served as a pilot for 
 ### Goal
 To replace static quizzes and text with dynamic simulations that allow students to *experience* statistical concepts using real Python code (hidden behind `ipywidgets`).
 
+[![Open In Colab](https://colab.research.google.com/assets/colab-badge.svg)](https://colab.research.google.com/github/rkn2/hdr-dsc-k12/blob/main/Chapter_10_updated.ipynb)
+
 ### New Interactive Widgets
 
 We implemented three key interactive modules using `matplotlib`, `numpy`, and `ipywidgets`:
