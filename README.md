@@ -63,3 +63,29 @@ python3 convert_doc.py "Path/To/Input.docx" "Output_Name.ipynb"
 *   **Tables look wrong:** Ensure you are using the latest version of the script which uses the `gfm` (GitHub Flavored Markdown) format in the Pandoc step.
 *   **Images missing:** The script handles both Markdown `![]()` and HTML `<img src="">` tags. If images are missing, check if the source Word doc uses unusual image wrapping.
 *   **Math Equations:** Standard Word equations are converted to LaTeX (`$E=mc^2$`). However, equations pasted as **pictures** in Word cannot be converted to text/LaTeX automatically and will remain as images.
+
+## Chapter 10 Interactive Enhancements (Pilot Project)
+
+After the baseline conversion, `Chapter_10_updated.ipynb` served as a pilot for integrating interactive, data-science-focused learning tools directly into the curriculum.
+
+### Goal
+To replace static quizzes and text with dynamic simulations that allow students to *experience* statistical concepts using real Python code (hidden behind `ipywidgets`).
+
+### New Interactive Widgets
+
+We implemented three key interactive modules using `matplotlib`, `numpy`, and `ipywidgets`:
+
+1.  **Lurking Variable Demo**:
+    *   *Concept:* Demonstrates how a lurking variable (Temperature) creates a spurious correlation between Ice Cream Sales and Shark Attacks.
+    *   *Interactivity:* Students use sliders to adjust sample size and scatter noise, seeing real-time updates to the correlation plots.
+
+2.  **Randomization Demo**:
+    *   *Concept:* Visualizes the power of random assignment in balancing groups.
+    *   *Interactivity:* Students simulate assigning subjects to treatment/control groups and view histograms that dynamically update to show how randomization balances variables (like Age) over large ns.
+
+3.  **Confounding Variable (Simpson's Paradox) Explorer**:
+    *   *Concept:* Illustrates Simpson's Paradox, where an aggregate trend (e.g., "Exercise increases health risk") reverses when the data is stratified by a confounding variable (Age).
+    *   *Interactivity:* An exploratory module where students use a dropdown menu to color-code scatter plots by different factors (Gender, Coffee Preference, Age) to "discover" the true confounding variable that explains the paradox.
+
+### Development Workflow
+These widgets were injected programmatically using helper scripts (e.g., `add_widgets_ch10.py`, `place_confounding_widget.py`, `revise_confounding_widget.py`) to ensure they were placed correctly within the narrative flow of the existing guided notes.
