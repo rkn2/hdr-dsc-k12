@@ -88,6 +88,9 @@ def convert_to_notebook(docx_path, output_notebook_path):
     processed_content = re.sub(r'!\[(.*?)\]\((.*?)\)', image_replacer, md_content)
 
     # 3b. Clean up Pandoc artifacts
+    # Remove dimension attributes like {width="..." height="..."} that might appear after images
+    processed_content = re.sub(r'\{width=.*?\}', '', processed_content)
+
     # Remove spans like [Text]{.underline} -> <u>Text</u>
     # Or generically [Text]{...} -> Text (or handle specific classes)
     def span_replacer(match):
