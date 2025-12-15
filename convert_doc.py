@@ -87,28 +87,46 @@ def convert_to_notebook(docx_path, output_notebook_path):
     # Replace markdown images with HTML
     processed_content = re.sub(r'!\[(.*?)\]\((.*?)\)', image_replacer, md_content)
 
+    # 3b. Clean up Pandoc artifacts
+    # Remove spans like [Text]{.underline} -> <u>Text</u>
+    # Or generically [Text]{...} -> Text (or handle specific classes)
+    def span_replacer(match):
+        text = match.group(1)
+        attrs = match.group(2)
+        if 'underline' in attrs:
+            return f'<u>{text}</u>'
+        return text
+
+    processed_content = re.sub(r'\[(.*?)\]\{(.*?)\}', span_replacer, processed_content)
+
     # 4. Create Notebook Structure
-    # Simple strategy: split by headers (lines starting with #) to make different cells?
-    # Or just put everything in one big markdown cell?
-    # Better: Split by headers to make it structured.
-    
     cells = []
-    
-    # Split by lines that start with # (headers)
-    # We want to keep the delimiter.
-    # A simple way is to iterate line by line.
     
     current_cell_source = []
     
     for line in processed_content.splitlines():
-        # If it's a header, start a new cell (unless it's the very first line)
-        if line.strip().startswith('#') and current_cell_source:
-             cells.append({
-                 "cell_type": "markdown",
-                 "metadata": {},
-                 "source": "\n".join(current_cell_source)
-             })
-             current_cell_source = []
+        # Heuristic for new cell:
+        # 1. Line starts with # (Header)
+        # 2. Line looks like a bold header: **Something** (and short)
+        
+        is_header = line.strip().startswith('#')
+        is_bold_header = line.strip().startswith('**') and len(line) < 100
+        
+        if (is_header or is_bold_header) and current_cell_source:
+             # If the previous cell was very short (e.g. valid empty lines), maybe don't split?
+             # But generally, split.
+             
+             # Clean up trailing empty lines from previous cell
+             while current_cell_source and not current_cell_source[-1].strip():
+                 current_cell_source.pop()
+                 
+             if current_cell_source:
+                cells.append({
+                    "cell_type": "markdown",
+                    "metadata": {},
+                    "source": "\n".join(current_cell_source)
+                })
+                current_cell_source = []
         
         current_cell_source.append(line)
         
@@ -155,7 +173,7 @@ def convert_to_notebook(docx_path, output_notebook_path):
         os.remove(temp_md)
 
 if __name__ == "__main__":
-    docx_file = "curriculumNotesFromBob/Chapter 10 - Observational Studies and Designed Experiments (Guided Notes).docx"
+    docx_file = "../curriculumNotesFromBob/Chapter 10 - Observational Studies and Designed Experiments (Guided Notes).docx"
     output_nb = "Chapter_10.ipynb"
     
     # Ensure paths are correct relative to cwd
