@@ -1,0 +1,165 @@
+
+import subprocess
+import os
+import base64
+import re
+import json
+from pathlib import Path
+
+def get_base64_image_tag(image_path, width="100%"):
+    """
+    Reads an image file and returns an HTML string with embedded base64 data.
+    """
+    if not os.path.exists(image_path):
+        print(f"Warning: Image not found at {image_path}")
+        return f"<b>Error: Image not found at {image_path}</b>"
+
+    try:
+        with open(image_path, "rb") as img_file:
+            b64_data = base64.b64encode(img_file.read()).decode('utf-8')
+
+        ext = Path(image_path).suffix.lower().replace('.', '')
+        if ext == 'jpg': ext = 'jpeg'
+        
+        # Determine strict MIME type for common formats to ensure browser compatibility
+        if ext == 'svg':
+            mime_type = 'image/svg+xml'
+        else:
+            mime_type = f'image/{ext}'
+
+        html_tag = (
+            f'<img src="data:{mime_type};base64,{b64_data}" '
+            f'alt="{Path(image_path).name}" '
+            f'style="max-width:{width}; height:auto;" />'
+        )
+        return html_tag
+    except Exception as e:
+        print(f"Error processing image {image_path}: {e}")
+        return f"<b>Error processing image {image_path}</b>"
+
+def convert_to_notebook(docx_path, output_notebook_path):
+    print(f"Converting {docx_path}...")
+    
+    # 1. Run Pandoc to convert docx to markdown and extract media
+    # We use a temporary markdown file
+    temp_md = "temp_output.md"
+    media_dir = "media_chapter_10"
+    
+    # Create media directory if it handles it differently or just let pandoc do it
+    if os.path.exists(media_dir):
+         # Optional: clean up old media? For now, let's just leave it or overwrite.
+         pass
+         
+    cmd = [
+        "pandoc",
+        docx_path,
+        "-f", "docx",
+        "-t", "markdown",
+        "--wrap=none",
+        f"--extract-media={media_dir}",
+        "-o", temp_md
+    ]
+    
+    print("Running Pandoc:", " ".join(cmd))
+    subprocess.run(cmd, check=True)
+    
+    # 2. Read the generated markdown
+    with open(temp_md, "r", encoding="utf-8") as f:
+        md_content = f.read()
+
+    # 3. Process the markdown to embed images
+    # Pandoc markdown images look like: ![](path/to/image.png) or ![alt](path/to/image.png)
+    # Regex to find images: !\[(.*?)\]\((.*?)\)
+    
+    def image_replacer(match):
+        alt_text = match.group(1)
+        img_path = match.group(2)
+        
+        # The path from pandoc will be relative to where we ran it, e.g. media_chapter_10/media/image1.png
+        # Note: Pandoc extract-media behavior creates a folder INSIDE the target dir usually called 'media'
+        # Let's check the actual path in the regex match vs file system
+        
+        # If pandoc outputs paths like 'media_chapter_10/media/image1.png', we use that.
+        
+        print(f"Found image: {img_path}")
+        return get_base64_image_tag(img_path)
+
+    # Replace markdown images with HTML
+    processed_content = re.sub(r'!\[(.*?)\]\((.*?)\)', image_replacer, md_content)
+
+    # 4. Create Notebook Structure
+    # Simple strategy: split by headers (lines starting with #) to make different cells?
+    # Or just put everything in one big markdown cell?
+    # Better: Split by headers to make it structured.
+    
+    cells = []
+    
+    # Split by lines that start with # (headers)
+    # We want to keep the delimiter.
+    # A simple way is to iterate line by line.
+    
+    current_cell_source = []
+    
+    for line in processed_content.splitlines():
+        # If it's a header, start a new cell (unless it's the very first line)
+        if line.strip().startswith('#') and current_cell_source:
+             cells.append({
+                 "cell_type": "markdown",
+                 "metadata": {},
+                 "source": "\n".join(current_cell_source)
+             })
+             current_cell_source = []
+        
+        current_cell_source.append(line)
+        
+    # Append the last cell
+    if current_cell_source:
+        cells.append({
+             "cell_type": "markdown",
+             "metadata": {},
+             "source": "\n".join(current_cell_source)
+         })
+
+    notebook_json = {
+        "cells": cells,
+        "metadata": {
+            "kernelspec": {
+                "display_name": "Python 3",
+                "language": "python",
+                "name": "python3"
+            },
+            "language_info": {
+                "codemirror_mode": {
+                    "name": "ipython",
+                    "version": 3
+                },
+                "file_extension": ".py",
+                "mimetype": "text/x-python",
+                "name": "python",
+                "nbconvert_exporter": "python",
+                "pygments_lexer": "ipython3",
+                "version": "3.8.5"
+            }
+        },
+        "nbformat": 4,
+        "nbformat_minor": 4
+    }
+
+    with open(output_notebook_path, "w", encoding="utf-8") as f:
+        json.dump(notebook_json, f, indent=2)
+
+    print(f"Created notebook: {output_notebook_path}")
+    
+    # Cleanup
+    if os.path.exists(temp_md):
+        os.remove(temp_md)
+
+if __name__ == "__main__":
+    docx_file = "curriculumNotesFromBob/Chapter 10 - Observational Studies and Designed Experiments (Guided Notes).docx"
+    output_nb = "Chapter_10.ipynb"
+    
+    # Ensure paths are correct relative to cwd
+    cwd = os.getcwd()
+    full_docx_path = os.path.join(cwd, docx_file)
+    
+    convert_to_notebook(full_docx_path, output_nb)
