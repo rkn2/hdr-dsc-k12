@@ -176,11 +176,23 @@ def convert_to_notebook(docx_path, output_notebook_path):
         os.remove(temp_md)
 
 if __name__ == "__main__":
-    docx_file = "../curriculumNotesFromBob/Chapter 11 - Understanding Randomness (Guided Notes).docx"
-    output_nb = "Chapter_11.ipynb"
+    import argparse
+    parser = argparse.ArgumentParser(description="Convert docx to ipynb with embedded images.")
+    parser.add_argument("docx_file", nargs='?', help="Path to input docx file")
+    parser.add_argument("output_nb", nargs='?', help="Path to output ipynb file")
     
-    # Ensure paths are correct relative to cwd
-    cwd = os.getcwd()
-    full_docx_path = os.path.join(cwd, docx_file)
-    
-    convert_to_notebook(full_docx_path, output_nb)
+    args = parser.parse_args()
+
+    if args.docx_file and args.output_nb:
+        # Command line arguments provided
+        full_docx_path = os.path.abspath(args.docx_file)
+        convert_to_notebook(full_docx_path, args.output_nb)
+    else:
+        # Default behavior (useful for quick testing or if run without args)
+        print("No arguments provided. Usage: python convert_doc.py <input.docx> <output.ipynb>")
+        # Example default, can be removed or kept as fallback
+        # docx_file = "../curriculumNotesFromBob/Chapter 11 - Understanding Randomness (Guided Notes).docx"
+        # output_nb = "Chapter_11.ipynb"
+        # cwd = os.getcwd()
+        # full_docx_path = os.path.join(cwd, docx_file)
+        # convert_to_notebook(full_docx_path, output_nb)
