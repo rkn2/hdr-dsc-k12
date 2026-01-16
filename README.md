@@ -1,108 +1,85 @@
-# Word to Jupyter Notebook Conversion Workflow
+# HDR DSC K-12: Statistics Curriculum Notebooks
 
-This guide documents the process for replacing the manual conversion of Word documents with an automated script that produces high-quality Jupyter Notebooks (`.ipynb`) compatible with Google Colab.
+This repository contains interactive Jupyter Notebooks designed for the HDR DSC K-12 Statistics curriculum. These notebooks replace static worksheets with dynamic, data-driven learning experiences.
+
+## 📌 Navigation
+*   [**For High School Teachers & Students**](#for-high-school-teachers--students) - Access the curriculum and learn how to use it.
+*   [**For Developers & Contributors**](#for-developers--contributors) - Learn how the conversion scripts work and how to update them.
+
+---
+
+# For High School Teachers & Students
+
+## What is this?
+This is a collection of "Guided Notes" converted into interactive **Jupyter Notebooks**. Unlike standard Word documents, these notebooks allow you to run real experiments and simulations directly in your browser.
+
+## How to Use
+1.  **Select a Chapter** from the table below.
+2.  **Click the "Open in Colab" badge**. This launches the notebook in Google's cloud environment.
+3.  **Run the Simulations**: Look for the interactive widgets (like the Coin Flip or Survey simulator).
+    *   Click the **Play Symbol (▶)** next to the title (e.g., `# @title 🟢 Click 'Play' to Start`).
+    *   Adjust sliders and settings to explore the data!
+
+## 📚 Curriculum Materials
+
+| Chapter | Title | Colab Link | Key Interpretive Simulations |
+| :--- | :--- | :--- | :--- |
+| **9** | Samples | [![Open In Colab](https://colab.research.google.com/assets/colab-badge.svg)](https://colab.research.google.com/github/rkn2/hdr-dsc-k12/blob/main/Chapter_9.ipynb) | Bias Simulator, Sample Size Explorer |
+| **10** | Observational Studies | [![Open In Colab](https://colab.research.google.com/assets/colab-badge.svg)](https://colab.research.google.com/github/rkn2/hdr-dsc-k12/blob/main/Chapter_10_updated.ipynb) | **Confounding Variable Explorer** (Simpson's Paradox), Lurking Variables |
+| **11** | Understanding Randomness | [![Open In Colab](https://colab.research.google.com/assets/colab-badge.svg)](https://colab.research.google.com/github/rkn2/hdr-dsc-k12/blob/main/Chapter_11.ipynb) | **World Series Sim**, **Cereal Box Collection**, Dorm Lottery, Free Throw Streaks |
+| **12** | Counting Principles | [![Open In Colab](https://colab.research.google.com/assets/colab-badge.svg)](https://colab.research.google.com/github/rkn2/hdr-dsc-k12/blob/main/Chapter_12.ipynb) | Permutations vs. Combinations, Birthday Problem |
+| **13** | Probability | [![Open In Colab](https://colab.research.google.com/assets/colab-badge.svg)](https://colab.research.google.com/github/rkn2/hdr-dsc-k12/blob/main/Chapter_13.ipynb) | Traffic Light Model, Dice Sum Simulator |
+| **14** | Probability Rules | [![Open In Colab](https://colab.research.google.com/assets/colab-badge.svg)](https://colab.research.google.com/github/rkn2/hdr-dsc-k12/blob/main/Chapter_14.ipynb) | Venn Diagram Explorer, Conditional Probability Tree |
+| **15** | Probability Models | [![Open In Colab](https://colab.research.google.com/assets/colab-badge.svg)](https://colab.research.google.com/github/rkn2/hdr-dsc-k12/blob/main/Chapter_15.ipynb) | Binomial/Normal Approximation, Geometric Distribution |
+| **16** | Confidence Intervals | [![Open In Colab](https://colab.research.google.com/assets/colab-badge.svg)](https://colab.research.google.com/github/rkn2/hdr-dsc-k12/blob/main/Chapter_16.ipynb) | Capture the Parameter, Margin of Error Explorer |
+
+---
+
+# For Developers & Contributors
+
+This section documents the technical workflow for converting Word documents into the Jupyter Notebooks listed above.
 
 ## Overview
-
-The goal is to convert Microsoft Word (`.docx`) files, which contain text, images, and tables, into Jupyter Notebooks. The output notebooks should:
-1.  **Embed Images:** Use Base64 encoding so images are self-contained within the notebook (no external image folders needed).
-2.  **Preserve Formatting:** Maintain bolding, italics, and headers.
-3.  **Handle Tables:** Render tables clearly using GitHub Flavored Markdown (GFM).
-4.  **Be Automated:** Allow for batch processing of multiple chapters.
-
-## Prerequisites
-
-1.  **Python 3**: Ensure Python is installed.
-2.  **Pandoc**: This tool is essential for the underlying conversion.
-    *   *Mac (Homebrew):* `brew install pandoc`
-    *   *Windows/Linux:* See [pandoc.org](https://pandoc.org/installing.html)
-3.  **Dependencies**: The python script uses standard libraries (`os`, `sys`, `json`, `base64`, `re`, `pathlib`, `argparse`, `subprocess`), so no `pip install` is usually required.
+The goal is to automate the conversion of Microsoft Word (`.docx`) files into high-quality Jupyter Notebooks (`.ipynb`) that:
+1.  **Embed Images**: Use Base64 encoding so images are self-contained.
+2.  **Preserve Formatting**: Maintain bolding, italics, headers, and tables.
+3.  **Hide Code**: Automatically configure cells so Python code is hidden from students by default.
 
 ## The Script: `convert_doc.py`
+The core tool is `convert_doc.py`, located in the root of this repository.
 
-The core of this workflow is the `convert_doc.py` script located in the root of the repository.
+### Prerequisites
+1.  **Python 3**
+2.  **Pandoc**: Essential for the underlying conversion.
+    *   *Mac (Homebrew):* `brew install pandoc`
+    *   *Windows/Linux:* See [pandoc.org](https://pandoc.org/installing.html)
+3.  **Dependencies**: Standard libraries (`os`, `sys`, `json`, `base64`, `re`, `pathlib`).
 
 ### How it Works
-1.  **Pandoc Conversion**: It runs `pandoc` to convert the `.docx` file into a temporary GitHub Flavored Markdown (`gfm`) file. It extracts images into a temporary folder.
-    *   *Command used internally:* `pandoc input.docx -f docx -t gfm --extract-media=temp_folder -o temp.md`
-    *   *Why GFM?* It preserves table borders better than standard markdown.
-2.  **Image Embedding**: It scans the generated markdown for both Markdown-style images (`![alt](path)`) and HTML-style images (`<img src="path" ... />`). It reads the image files, converts them to Base64 strings, and replaces the links with embedded HTML tags.
-3.  **Cleanup**: It removes Pandoc-specific artifacts (like `{width=...}` tags) and fixes common formatting issues (like `[text]{.underline}` -> `<u>text</u>`).
-4.  **Notebook Creation**: It parses the markdown, splitting content into separate cells based on headers to improve readability, and generates a valid `.ipynb` JSON file.
+1.  **Pandoc Conversion**: Converts `.docx` to temporary GitHub Flavored Markdown (`gfm`), extracting images to a folder.
+2.  **Image Embedding**: Scans for images, converts them to Base64 strings, and embeds them directly into the markdown as HTML tags.
+3.  **Cleanup**: Removes Pandoc-specific artifacts and fixes formatting quirks.
+4.  **Notebook Generation**: Parses the markdown into JSON cells, creating a valid `.ipynb` file.
 
 ### Usage
+Run the script from the command line:
 
-You can run the script from the command line, passing the input Word document and the desired output Notebook filename.
-
-**Basic Syntax:**
 ```bash
 python3 convert_doc.py "Path/To/Input.docx" "Output_Name.ipynb"
 ```
 
-**Examples:**
+**Example:**
+```bash
+python3 convert_doc.py "../curriculumNotes/Chapter 11.docx" "Chapter_11.ipynb"
+```
 
-*   Convert a single chapter:
-    ```bash
-    python3 convert_doc.py "../curriculumNotesFromBob/Chapter 9.docx" "Chapter_9.ipynb"
-    ```
-
-*   Convert multiple chapters (using a simple shell script or individual commands):
-    ```bash
-    python3 convert_doc.py "Chapter 10.docx" "Chapter_10.ipynb"
-    python3 convert_doc.py "Chapter 11.docx" "Chapter_11.ipynb"
-    ```
-
-## Files in this Repository
-
-*   `convert_doc.py`: The main automation script.
-*   `README.md`: This file.
-*   `Chapter_*.ipynb`: The converted notebooks.
+## Adding Interactive Widgets
+After conversion, interactivity is added via Python scripts (e.g., `add_widgets_ch10.py`). These scripts:
+1.  Load the notebook JSON.
+2.  Locate specific "anchor text" (e.g., "Example 1").
+3.  Inject a new Code Cell containing the widget logic (`ipywidgets`).
+4.  Inject a `# @title` header to ensure the code collapses in Colab.
 
 ## Troubleshooting
-
-*   **Tables look wrong:** Ensure you are using the latest version of the script which uses the `gfm` (GitHub Flavored Markdown) format in the Pandoc step.
-*   **Images missing:** The script handles both Markdown `![]()` and HTML `<img src="">` tags. If images are missing, check if the source Word doc uses unusual image wrapping.
-*   **Math Equations:** Standard Word equations are converted to LaTeX (`$E=mc^2$`). However, equations pasted as **pictures** in Word cannot be converted to text/LaTeX automatically and will remain as images.
-
-## Chapter 10 Interactive Enhancements (Pilot Project)
-
-After the baseline conversion, `Chapter_10_updated.ipynb` served as a pilot for integrating interactive, data-science-focused learning tools directly into the curriculum.
-
-### Goal
-To replace static quizzes and text with dynamic simulations that allow students to *experience* statistical concepts using real Python code (hidden behind `ipywidgets`).
-
-[![Open In Colab](https://colab.research.google.com/assets/colab-badge.svg)](https://colab.research.google.com/github/rkn2/hdr-dsc-k12/blob/main/Chapter_10_updated.ipynb)
-
-### New Interactive Widgets
-
-We implemented three key interactive modules using `matplotlib`, `numpy`, and `ipywidgets`:
-
-1.  **Lurking Variable Demo**:
-    *   *Concept:* Demonstrates how a lurking variable (Temperature) creates a spurious correlation between Ice Cream Sales and Shark Attacks.
-    *   *Interactivity:* Students use sliders to adjust sample size and scatter noise, seeing real-time updates to the correlation plots.
-
-2.  **Randomization Demo**:
-    *   *Concept:* Visualizes the power of random assignment in balancing groups.
-    *   *Interactivity:* Students simulate assigning subjects to treatment/control groups and view histograms that dynamically update to show how randomization balances variables (like Age) over large ns.
-
-3.  **Confounding Variable (Simpson's Paradox) Explorer**:
-    *   *Concept:* Illustrates Simpson's Paradox, where an aggregate trend (e.g., "Exercise increases health risk") reverses when the data is stratified by a confounding variable (Age).
-    *   *Interactivity:* An exploratory module where students use a dropdown menu to color-code scatter plots by different factors (Gender, Coffee Preference, Age) to "discover" the true confounding variable that explains the paradox.
-
-### Development Workflow
-These widgets were injected programmatically using helper scripts (e.g., `add_widgets_ch10.py`, `place_confounding_widget.py`, `revise_confounding_widget.py`) to ensure they were placed correctly within the narrative flow of the existing guided notes.
-
-## Available Interactive Chapters
-
-All converted chapters are available below. Those marked with *Interactive* include custom Python widgets.
-
-| Chapter | Title | Colab Link | Key Interactive Widget |
-| :--- | :--- | :--- | :--- |
-| **9** | Samples | [![Open In Colab](https://colab.research.google.com/assets/colab-badge.svg)](https://colab.research.google.com/github/rkn2/hdr-dsc-k12/blob/main/Chapter_9.ipynb) | 3 Widgets: Sampling Bias, Sample Size, & Sampling Methods |
-| **10** | Observational Studies | [![Open In Colab](https://colab.research.google.com/assets/colab-badge.svg)](https://colab.research.google.com/github/rkn2/hdr-dsc-k12/blob/main/Chapter_10_updated.ipynb) | Confounding Variable Explorer (Simpson's Paradox) |
-| **11** | Understanding Randomness | [![Open In Colab](https://colab.research.google.com/assets/colab-badge.svg)](https://colab.research.google.com/github/rkn2/hdr-dsc-k12/blob/main/Chapter_11.ipynb) | 2 Widgets: Law of Large Numbers (Coin Flip) & Hot Hand Fallacy (Run Length) |
-| **12** | Counting Principles | [![Open In Colab](https://colab.research.google.com/assets/colab-badge.svg)](https://colab.research.google.com/github/rkn2/hdr-dsc-k12/blob/main/Chapter_12.ipynb) | 2 Widgets: Permutations vs. Combinations & The Birthday Problem |
-| **13** | Probability | [![Open In Colab](https://colab.research.google.com/assets/colab-badge.svg)](https://colab.research.google.com/github/rkn2/hdr-dsc-k12/blob/main/Chapter_13.ipynb) | 2 Widgets: Traffic Light Model & Dice Sum Simulator |
-| **14** | Probability Rules | [![Open In Colab](https://colab.research.google.com/assets/colab-badge.svg)](https://colab.research.google.com/github/rkn2/hdr-dsc-k12/blob/main/Chapter_14.ipynb) | 2 Widgets: Venn Diagram Explorer & Conditional Probability Tree |
-| **15** | Probability Models | [![Open In Colab](https://colab.research.google.com/assets/colab-badge.svg)](https://colab.research.google.com/github/rkn2/hdr-dsc-k12/blob/main/Chapter_15.ipynb) | 2 Widgets: Binomial/Normal Approximation & Geometric Distribution (Wait Time) |
-| **16** | Confidence Intervals | [![Open In Colab](https://colab.research.google.com/assets/colab-badge.svg)](https://colab.research.google.com/github/rkn2/hdr-dsc-k12/blob/main/Chapter_16.ipynb) | 2 Widgets: Capture the Parameter & Margin of Error Explorer (Tug-of-War) |
+*   **Tables look wrong:** Ensure Pandoc is up to date. The script uses GFM format for tables.
+*   **Images missing:** The script handles standard Word images. Smart Art or Equation Objects usually need to be screenshotted/converted to pictures first.
