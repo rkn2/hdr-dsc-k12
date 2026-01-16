@@ -74,18 +74,63 @@ def stylize_chapter_11(notebook_path, output_path):
     with open(notebook_path, 'r', encoding='utf-8') as f:
         nb = nbformat.read(f, as_version=4)
 
-    # Find Cell 15 (Index 15? or search for "89064")
+    # Find Cell 15 (Simulation Table)
     target_idx = -1
     for i, cell in enumerate(nb.cells):
-        if "89064" in cell.source:
+        if "89064" in cell.source or "Component Model" in cell.source:
             target_idx = i
             break
             
     if target_idx != -1:
-        print(f"Refining Cell {target_idx} with styled content...")
+        print(f"Refining Cell {target_idx} (Simulation Table) with styled content...")
         nb.cells[target_idx] = new_markdown_cell(create_styled_cereal_content())
     else:
         print("Warning: Could not find '89064' in notebook.")
+
+    # Find the earlier cell "Specify how to model" containing the plain text key
+    # Text: "**0, 1 Simone 2, 3, 4 Caitlin 5, 6, 7, 8, 9 Serena.**"
+    model_idx = -1
+    for i, cell in enumerate(nb.cells):
+        if "0, 1 Simone" in cell.source and "Specify how to model" in cell.source:
+            model_idx = i
+            break
+            
+    if model_idx != -1:
+        print(f"Refining Cell {model_idx} (Component Definition) with styled content...")
+        # We want to keep the text before the key, and replace the key line with the HTML key.
+        # The key_html variable in create_styled_cereal_content() is what we want.
+        # Let's extract just the key from that function or redefine it here.
+        
+        # Redefine key purely for this replacement to be safe/clean
+        key_html = """
+<div style="background-color: #f9f9f9; padding: 10px; border-radius: 5px; margin-bottom: 10px;">
+    <strong>Component Model (Key):</strong>
+    <ul>
+        <li><span style="background-color: #ffcccc; padding: 2px 5px; border-radius: 3px;"><strong>0, 1</strong></span> = <span style="color: #d9534f; font-weight: bold;">Simone Biles</span> (20%)</li>
+        <li><span style="background-color: #ccffcc; padding: 2px 5px; border-radius: 3px;"><strong>2, 3, 4</strong></span> = <span style="color: #5cb85c; font-weight: bold;">Caitlin Clark</span> (30%)</li>
+        <li><span style="background-color: #cce5ff; padding: 2px 5px; border-radius: 3px;"><strong>5, 6, 7, 8, 9</strong></span> = <span style="color: #0275d8; font-weight: bold;">Serena Williams</span> (50%)</li>
+    </ul>
+</div>
+"""
+        # Current cell content usually ends with the bold text. We will replace that bold line.
+        # Original: "...One possible assignment of the digits, then, is\n\n> **0, 1 Simone 2..."
+        # We can just replace the whole cell content with a cleaner logic + the HTML key.
+        
+        new_source = """**Specify how to model a component outcome using equally likely random digits:**
+
+1. Identify the component to be repeated.
+
+> In this case, our component is the opening of a box of cereal.
+
+2. Explain how you will model the component’s outcome.
+
+> The digits from 0 to 9 are equally likely to occur. Because 20% of the boxes contain Simone’s picture, we’ll use 2 of the 10 digits to represent that outcome. Three of the 10 digits can model the 30% of boxes with Caitlin’s cards, and the remaining 5 digits can represent the 50% of boxes with Serena.
+>
+> One possible assignment of the digits, then, is:
+
+""" + key_html
+        
+        nb.cells[model_idx] = new_markdown_cell(new_source)
 
     print(f"Saving to {output_path}...")
     with open(output_path, 'w', encoding='utf-8') as f:
