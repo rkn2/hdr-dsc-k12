@@ -91,3 +91,13 @@ We implemented three key interactive modules using `matplotlib`, `numpy`, and `i
 
 ### Development Workflow
 These widgets were injected programmatically using helper scripts (e.g., `add_widgets_ch10.py`, `place_confounding_widget.py`, `revise_confounding_widget.py`) to ensure they were placed correctly within the narrative flow of the existing guided notes.
+
+## Available Interactive Chapters
+
+All converted chapters are available below. Those marked with *Interactive* include custom Python widgets.
+
+| Chapter | Title | Colab Link | Key Interactive Widget |
+| :--- | :--- | :--- | :--- |
+| **9** | Samples | [![Open In Colab](https://colab.research.google.com/assets/colab-badge.svg)](https://colab.research.google.com/github/rkn2/hdr-dsc-k12/blob/main/Chapter_9.ipynb) | Sampling Bias Simulator (Random vs. Convenience) |
+| **10** | Observational Studies | [![Open In Colab](https://colab.research.google.com/assets/colab-badge.svg)](https://colab.research.google.com/github/rkn2/hdr-dsc-k12/blob/main/Chapter_10_updated.ipynb) | Confounding Variable Explorer (Simpson's Paradox) |
+| **11** | Understanding Randomness | [![Open In Colab](https://colab.research.google.com/assets/colab-badge.svg)](https://colab.research.google.com/github/rkn2/hdr-dsc-k12/blob/main/Chapter_11.ipynb) | Law of Large Numbers (Coin Flip Simulation) |
