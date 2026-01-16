@@ -37,6 +37,7 @@ def create_styled_cereal_content():
     ]
     
     for digits, outcomes, result in trials:
+        # Format Digits
         formatted_digits = ""
         for d in digits:
             if d in ['0', '1']: color = "#d9534f" # Red/Simone
@@ -47,8 +48,15 @@ def create_styled_cereal_content():
                 formatted_digits += f'<span style="color: {color}; font-weight: bold; font-size: 1.2em; margin-right: 2px;">{d}</span>'
             else:
                 formatted_digits += d
+        
+        # Format Outcomes
+        # Replace names with colored versions
+        formatted_outcomes = outcomes
+        formatted_outcomes = formatted_outcomes.replace("Simone", '<span style="color: #d9534f; font-weight: bold;">Simone</span>')
+        formatted_outcomes = formatted_outcomes.replace("Caitlin", '<span style="color: #5cb85c; font-weight: bold;">Caitlin</span>')
+        formatted_outcomes = formatted_outcomes.replace("Serena", '<span style="color: #0275d8; font-weight: bold;">Serena</span>')
                 
-        table_rows += f"<tr><td style='letter-spacing: 2px;'>{formatted_digits}</td><td>{outcomes}</td><td>{result}</td></tr>"
+        table_rows += f"<tr><td style='letter-spacing: 2px;'>{formatted_digits}</td><td>{formatted_outcomes}</td><td>{result}</td></tr>"
 
     viz_html = f"""
     <table class="table" style="width: 100%; border: 1px solid #ddd;">
