@@ -26,14 +26,14 @@ This is a collection of "Guided Notes" converted into interactive **Jupyter Note
 
 | Chapter | Title | Colab Link | Key Interpretive Simulations |
 | :--- | :--- | :--- | :--- |
-| **9** | Samples | [![Open In Colab](https://colab.research.google.com/assets/colab-badge.svg)](https://colab.research.google.com/github/rkn2/hdr-dsc-k12/blob/feature/em-mechanics-conversion/Chapter_9_EM.ipynb) | Bias Simulator, Sample Size Explorer |
-| **10** | Observational Studies | [![Open In Colab](https://colab.research.google.com/assets/colab-badge.svg)](https://colab.research.google.com/github/rkn2/hdr-dsc-k12/blob/feature/em-mechanics-conversion/Chapter_10_EM.ipynb) | **Confounding Variable Explorer** (Simpson's Paradox), Lurking Variables |
-| **11** | Understanding Randomness | [![Open In Colab](https://colab.research.google.com/assets/colab-badge.svg)](https://colab.research.google.com/github/rkn2/hdr-dsc-k12/blob/feature/em-mechanics-conversion/Chapter_11_EM.ipynb) | **World Series Sim**, **Certificate Collection**, Dorm Quality Check, Base Loads |
-| **12** | Counting Principles | [![Open In Colab](https://colab.research.google.com/assets/colab-badge.svg)](https://colab.research.google.com/github/rkn2/hdr-dsc-k12/blob/feature/em-mechanics-conversion/Chapter_12_EM.ipynb) | Permutations vs. Combinations, Limit States Problem |
-| **13** | Probability | [![Open In Colab](https://colab.research.google.com/assets/colab-badge.svg)](https://colab.research.google.com/github/rkn2/hdr-dsc-k12/blob/feature/em-mechanics-conversion/Chapter_13_EM.ipynb) | Traffic Light Model, Dice Sum Simulator |
-| **14** | Probability Rules | [![Open In Colab](https://colab.research.google.com/assets/colab-badge.svg)](https://colab.research.google.com/github/rkn2/hdr-dsc-k12/blob/feature/em-mechanics-conversion/Chapter_14_EM.ipynb) | Venn Diagram Explorer, Conditional Probability Tree |
-| **15** | Probability Models | [![Open In Colab](https://colab.research.google.com/assets/colab-badge.svg)](https://colab.research.google.com/github/rkn2/hdr-dsc-k12/blob/feature/em-mechanics-conversion/Chapter_15_EM.ipynb) | Binomial/Normal Approximation, Geometric Distribution |
-| **16** | Confidence Intervals | [![Open In Colab](https://colab.research.google.com/assets/colab-badge.svg)](https://colab.research.google.com/github/rkn2/hdr-dsc-k12/blob/feature/em-mechanics-conversion/Chapter_16_EM.ipynb) | Capture the Parameter, Margin of Error Explorer |
+| **9** | Samples | [![Open In Colab](https://colab.research.google.com/assets/colab-badge.svg)](https://colab.research.google.com/github/rkn2/hdr-dsc-k12/blob/main/Chapter_9_EM.ipynb) | Bias Simulator, Sample Size Explorer |
+| **10** | Observational Studies | [![Open In Colab](https://colab.research.google.com/assets/colab-badge.svg)](https://colab.research.google.com/github/rkn2/hdr-dsc-k12/blob/main/Chapter_10_EM.ipynb) | **Confounding Variable Explorer** (Simpson's Paradox), Lurking Variables |
+| **11** | Understanding Randomness | [![Open In Colab](https://colab.research.google.com/assets/colab-badge.svg)](https://colab.research.google.com/github/rkn2/hdr-dsc-k12/blob/main/Chapter_11_EM.ipynb) | **World Series Sim**, **Certificate Collection**, Dorm Quality Check, Base Loads |
+| **12** | Counting Principles | [![Open In Colab](https://colab.research.google.com/assets/colab-badge.svg)](https://colab.research.google.com/github/rkn2/hdr-dsc-k12/blob/main/Chapter_12_EM.ipynb) | Permutations vs. Combinations, Limit States Problem |
+| **13** | Probability | [![Open In Colab](https://colab.research.google.com/assets/colab-badge.svg)](https://colab.research.google.com/github/rkn2/hdr-dsc-k12/blob/main/Chapter_13_EM.ipynb) | Traffic Light Model, Dice Sum Simulator |
+| **14** | Probability Rules | [![Open In Colab](https://colab.research.google.com/assets/colab-badge.svg)](https://colab.research.google.com/github/rkn2/hdr-dsc-k12/blob/main/Chapter_14_EM.ipynb) | Venn Diagram Explorer, Conditional Probability Tree |
+| **15** | Probability Models | [![Open In Colab](https://colab.research.google.com/assets/colab-badge.svg)](https://colab.research.google.com/github/rkn2/hdr-dsc-k12/blob/main/Chapter_15_EM.ipynb) | Binomial/Normal Approximation, Geometric Distribution |
+| **16** | Confidence Intervals | [![Open In Colab](https://colab.research.google.com/assets/colab-badge.svg)](https://colab.research.google.com/github/rkn2/hdr-dsc-k12/blob/main/Chapter_16_EM.ipynb) | Capture the Parameter, Margin of Error Explorer |
 
 ---
 
