@@ -181,7 +181,7 @@ CELL_REPLACEMENTS[10] = """**<span class="mark"><u>Does a Census Make Sense?</u>
 
   - <span class="mark">For example, destructive material testing (like crushing concrete cylinders to find their compressive strength) literally destroys the specimen — you can't test every single one or you'd have nothing left to build with.</span>
 
-- <span class="mark">Populations rarely stand still. Even if you could take a census, the population changes while you work, so it's never possible to get a perfect measure.</span>
+- <span class="mark">Production never stands still. Even if you could test every cylinder from today's pour, tomorrow brings a new batch with potentially different aggregate, water ratios, or curing conditions — so a "census" of one batch doesn't capture the ongoing variability of production.</span>
 
 """
 
